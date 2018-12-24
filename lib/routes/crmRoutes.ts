@@ -1,6 +1,9 @@
-import {Request, Response} from "express";
+import {Request, Response, NextFunction} from "express";
+import { ContactController } from "../controllers/crmController";
 
-export class Routes {    
+export class Routes { 
+    
+    public contactController: ContactController = new ContactController() 
     
     public routes(app): void {   
         
@@ -12,42 +15,28 @@ export class Routes {
         })
         
         // Contact 
-        app.route('/contact') 
-        // GET endpoint 
-        .get((req: Request, res: Response) => {
-        // Get all contacts            
-            res.status(200).send({
-                message: 'GET request successfulll!!!!'
-            })
-        })        
+        app.route('/contact')
+        .get((req: Request, res: Response, next: NextFunction) => {
+            // middleware
+            console.log(`Request from: ${req.originalUrl}`);
+            console.log(`Request type: ${req.method}`);            
+            // if(req.query.key !== '78942ef2c1c98bf10fca09c808d718fa3734703e'){
+            //     res.status(401).send('You shall not pass!');
+            // } else {
+            //     next();
+            // }
+            next();                        
+        }, this.contactController.getContacts)        
+
         // POST endpoint
-        .post((req: Request, res: Response) => {   
-        // Create new contact         
-            res.status(200).send({
-                message: 'POST request successfulll!!!!'
-            })
-        })
+        .post(this.contactController.addNewContact);
 
         // Contact detail
         app.route('/contact/:contactId')
         // get specific contact
-        .get((req: Request, res: Response) => {
-        // Get a single contact detail            
-            res.status(200).send({
-                message: 'GET request successfulll!!!!'
-            })
-        })
-        .put((req: Request, res: Response) => {
-        // Update a contact           
-            res.status(200).send({
-                message: 'PUT request successfulll!!!!'
-            })
-        })
-        .delete((req: Request, res: Response) => {       
-        // Delete a contact     
-            res.status(200).send({
-                message: 'DELETE request successfulll!!!!'
-            })
-        })
+        .get(this.contactController.getContactWithID)
+        .put(this.contactController.updateContact)
+        .delete(this.contactController.deleteContact)
+
     }
 }
