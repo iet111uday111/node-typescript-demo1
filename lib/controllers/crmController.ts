@@ -40,8 +40,6 @@ export class ContactController{
             if(err){
                 res.send(err);
             }
-            console.log(req.body );
-            
             res.json(contact);
         });
     }
